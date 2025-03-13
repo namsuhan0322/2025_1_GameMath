@@ -11,6 +11,6 @@ public class Move : MonoBehaviour
 
     void Update()
     {
-        
+
     }
 }
