@@ -25,12 +25,13 @@ public class Player : MonoBehaviour
 
     void MovementHandle()
     {
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
+        float moveX = Input.GetAxis("Vertical");
+        float moveZ = Input.GetAxis("Horizontal");
 
-        Vector3 movement = new Vector3(moveX, 0 ,moveZ).normalized;
+        Vector3 moveDirection = (transform.forward * moveX) + (transform.right * moveZ);
+        moveDirection.Normalize();
 
-        rb.MovePosition(rb.position + movement * speed * Time.deltaTime);
+        rb.MovePosition(rb.position + moveDirection * speed * Time.deltaTime);
     }
 
     void RotationHandle()
