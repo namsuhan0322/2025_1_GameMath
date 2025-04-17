@@ -1,18 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Gacha : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public Text oneGachaText;
+    public Text tenGachaText;
+
+    public void OneGacha()
     {
-        
+
     }
 
-    // Update is called once per frame
-    void Update()
+    public void TenGacha()
     {
-        
+
     }
 }
