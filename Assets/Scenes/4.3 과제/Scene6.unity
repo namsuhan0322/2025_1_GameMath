@@ -523,11 +523,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 89613044}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -50}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
-  m_Pivot: {x: 0, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &916717703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -550,7 +550,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 28
+    m_FontSize: 56
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 10
@@ -599,6 +599,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc7ff31419c480240b3c00ecdebae1c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resultText: {fileID: 916717703}
 --- !u!4 &917108137
 Transform:
   m_ObjectHideFlags: 0
@@ -774,7 +775,7 @@ GameObject:
   - component: {fileID: 1778366157}
   - component: {fileID: 1778366156}
   m_Layer: 5
-  m_Name: Button (Legacy) (1)
+  m_Name: Ten Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -843,7 +844,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1778366157}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 917108136}
+        m_TargetAssemblyTypeName: GachaSystem, Assembly-CSharp
+        m_MethodName: DrawTen
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1778366157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -895,7 +908,7 @@ GameObject:
   - component: {fileID: 1887774194}
   - component: {fileID: 1887774193}
   m_Layer: 5
-  m_Name: Button (Legacy)
+  m_Name: One Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -964,7 +977,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1887774194}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 917108136}
+        m_TargetAssemblyTypeName: GachaSystem, Assembly-CSharp
+        m_MethodName: DrawOnce
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1887774194
 MonoBehaviour:
   m_ObjectHideFlags: 0

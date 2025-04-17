@@ -12,7 +12,7 @@ public class Dice : MonoBehaviour
 
     private void Start()
     {
-        RollDice();
+        //RollDice();
     }
 
     public void RollDice()
