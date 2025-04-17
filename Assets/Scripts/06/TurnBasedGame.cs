@@ -38,33 +38,65 @@ public class TurnBasedGame : MonoBehaviour
 
     string[] rewards = { "Gold", "Weapon", "Armor", "Potion" };
 
+    // 전투 결과 집계 변수
+    int totalEnemyCount = 0;
+    int totalKilled = 0;
+    int totalHits = 0;
+    int totalCrits = 0;
+    float maxDmg = float.MinValue;
+    float minDmg = float.MaxValue;
+
+    // 아이템 획득 집계
+    int potions = 0;
+    int golds = 0;
+    int normalWeapons = 0;
+    int rareWeapons = 0;
+    int normalArmors = 0;
+    int rareArmors = 0;
+
     public void StartSimulation()
     {
         // 기하분포 샘플링: 레어 아이템이 나올 때까지 반복하는 구조
         rareItemObtained = false;
         turn = 0;
+
+        totalEnemyCount = 0;
+        totalKilled = 0;
+        totalHits = 0;
+        totalCrits = 0;
+        maxDmg = float.MinValue;
+        minDmg = float.MaxValue;
+
+        potions = 0;
+        golds = 0;
+        normalWeapons = 0;
+        rareWeapons = 0;
+        normalArmors = 0;
+        rareArmors = 0;
+
         while (!rareItemObtained)
         {
             SimulateTurn();
             turn++;
         }
 
-        Debug.Log($"레어 아이템 {turn} 턴에 획득");
+        UpdateUI();
     }
 
     void SimulateTurn()
     {
-        Debug.Log($"--- Turn {turn + 1} ---");
-
         // 푸아송 샘플링: 적 등장 수
         int enemyCount = SamplePoisson(poissonLambda);
-        Debug.Log($"적 등장 : {enemyCount}");
+        totalEnemyCount += enemyCount;
 
         for (int i = 0; i < enemyCount; i++)
         {
             // 이항 샘플링: 명중 횟수
             int hits = SampleBinomial(maxHitsPerTurn, hitRate);
+            totalHits += hits;
+
             float totalDamage = 0f;
+            int critCount = 0;
 
             for (int j = 0; j < hits; j++)
             {
@@ -74,37 +106,80 @@ public class TurnBasedGame : MonoBehaviour
                 if (Random.value < critChance)
                 {
                     damage *= critDamageRate;
-                    Debug.Log($" 크리티컬 hit! {damage:F1}");
+                    critCount++;
                 }
-                else
-                    Debug.Log($" 일반 hit! {damage:F1}");
+
+                totalCrits += (damage >= meanDamage * critDamageRate) ? 1 : 0;
+
+                if (damage > maxDmg) maxDmg = damage;
+                if (damage < minDmg) minDmg = damage;
 
                 totalDamage += damage;
             }
 
             if (totalDamage >= enemyHP)
             {
-                Debug.Log($"적 {i + 1} 처치! (데미지: {totalDamage:F1})");
+                totalKilled++;
 
                 // 균등 분포 샘플링: 보상 결정
                 string reward = rewards[UnityEngine.Random.Range(0, rewards.Length)];
 
                 float currentRare = Mathf.Clamp01(defaultRare + rareProbability * turn);
 
-                Debug.Log($"레어 확률 {(currentRare * 100f):F0}%");
+                //Debug.Log($"레어 확률 {(currentRare * 100f):F0}%");
 
-                if (reward == "Weapon" && Random.value < currentRare)
+                if (reward == "Potion")
                 {
-                    rareItemObtained = true;
-                    Debug.Log("레어 무기 획득!");
+                    potions++;
                 }
-                else if (reward == "Armor" && Random.value < currentRare)
+                else if (reward == "Gold")
                 {
-                    rareItemObtained = true;
-                    Debug.Log("레어 방어구 획득");
+                    golds++;
+                }
+                else if (reward == "Weapon")
+                {
+                    if (Random.value < currentRare)
+                    {
+                        rareWeapons++;
+                        rareItemObtained = true;
+                    }
+                    else
+                    {
+                        normalWeapons++;
+                    }
+                }
+                else if (reward == "Armor")
+                {
+                    if (Random.value < currentRare)
+                    {
+                        rareArmors++;
+                        rareItemObtained = true;
+                    }
+                    else
+                    {
+                        normalArmors++;
+                    }
                 }
             }
         }
+    }
+
+    void UpdateUI()
+    {
+        totalTurn.text = $"총 진행 턴 수 : {turn}";
+        totalEnemy.text = $"발생한 적 : {totalEnemyCount}";
+        enemyKilled.text = $"처치한 적 : {totalKilled}";
+        attackHit.text = $"공격 명중 결과 : {(totalHits * 100f / (maxHitsPerTurn * totalEnemyCount)):F2}%";
+        critical.text = $"발생한 치명타율 결과 : {(totalCrits * 100f / totalHits):F2}%";
+        maxDamage.text = $"최대 데미지 : {maxDmg:F2}";
+        minDamage.text = $"최소 데미지 : {minDmg:F2}";
+
+        potionCount.text = $"포션 : {potions}개";
+        goldCount.text = $"골드 : {golds}개";
+        normalWeaponCount.text = $"무기 - 일반 : {normalWeapons}개";
+        rareWeaponCount.text = $"무기 - 레어 : {rareWeapons}개";
+        normalArmorCount.text = $"방어구 - 일반 : {normalArmors}개";
+        rareArmorCount.text = $"방어구 - 레어 : {rareArmors}개";
     }
 
     // --- 분포 샘플 함수들 ---
