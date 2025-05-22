@@ -14,10 +14,7 @@ public class LerpMover : MonoBehaviour
     {
         if (t < 1f)
         {
-            //t += Time.deltaTime / duration;
             t = Mathf.PingPong(Time.time / duration, 1f);
-
-            //transform.position = Vector3.Lerp(startPos.position, endPos.position, t);
             transform.position = Vector3.LerpUnclamped(startPos.position, endPos.position, t);
         }
     }
