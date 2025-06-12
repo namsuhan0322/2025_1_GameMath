@@ -9,6 +9,7 @@ TagManager:
   - Ball
   - Player1
   - Player2
+  - QQ
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - UI
   - Enemy
   - Player
-  - 
+  - Ground
   - 
   - 
   - 
