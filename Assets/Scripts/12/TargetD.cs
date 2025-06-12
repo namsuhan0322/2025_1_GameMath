@@ -1,13 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class TargetD : MonoBehaviour
 {
     public enum PlayerType { Player1, Player2 };
-
     public PlayerType currentPlayer;
 
     private Rigidbody rb;
@@ -17,29 +14,29 @@ public class TargetD : MonoBehaviour
     [SerializeField] private float speed = 0f;
 
     [SerializeField] private List<GameObject> ballObj;
+    [SerializeField] private Ball[] ball;
 
-    [SerializeField] private Ball ball;
+    private bool isWaitingForStop = false; // 턴 전환 대기 상태
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        ball = FindObjectOfType<Ball>();
-
         ballObj = new List<GameObject>();
-
         currentPlayer = PlayerType.Player1;
     }
 
-    void Update()
+    private void Update()
     {
-        speed = rb.velocity.magnitude;
+        if (rb != null)
+            speed = rb.velocity.magnitude;
 
-        if (Input.GetMouseButtonDown(0))
+        // 클릭 시, 현재 플레이어의 공을 선택하고 힘을 가함
+        if (Input.GetMouseButtonDown(0) && !isWaitingForStop)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                if((currentPlayer == PlayerType.Player1 && hit.collider.CompareTag("Player1")) || 
+                if ((currentPlayer == PlayerType.Player1 && hit.collider.CompareTag("Player1")) ||
                     (currentPlayer == PlayerType.Player2 && hit.collider.CompareTag("Player2")))
                 {
                     rb = hit.collider.attachedRigidbody;
@@ -47,23 +44,47 @@ public class TargetD : MonoBehaviour
                     if (rb != null)
                     {
                         Vector3 point = hit.point;
-
                         Vector3 dir = (rb.position - point).normalized;
-
                         rb.AddForce(dir * forcePower, ForceMode.Impulse);
 
-                        SwitchTurn();
+                        isWaitingForStop = true;
                     }
                 }
             }
         }
+
+        // 플레이어가 친 공 전체 + 마지막으로 친 공 모두 멈췄는지 체크
+        if (isWaitingForStop && AllPlayerBallsAndRBStopped())
+        {
+            SwitchTurn();
+            isWaitingForStop = false;
+        }
     }
+
+
+    private bool AllPlayerBallsAndRBStopped()
+    {
+        const float stopThreshold = 0.05f;
+
+        // 플레이어가 친 모든 공이 멈췄는지 확인
+        bool allPlayerBallsStopped = ballObj.All(ball =>
+        {
+            var rigid = ball.GetComponent<Rigidbody>();
+            return rigid != null && rigid.velocity.magnitude < stopThreshold;
+        });
+
+        // 방금 친 공(rb)도 멈췄는지 확인
+        bool currentBallStopped = rb != null && rb.velocity.magnitude < stopThreshold;
+
+        return allPlayerBallsStopped && currentBallStopped;
+    }
+
 
     private void SwitchTurn()
     {
         currentPlayer = (currentPlayer == PlayerType.Player1) ? PlayerType.Player2 : PlayerType.Player1;
-
         ballObj.Clear();
+        Debug.Log($"Switched Turn to: {currentPlayer}");
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -75,7 +96,7 @@ public class TargetD : MonoBehaviour
             if (!isDuplicate)
                 ballObj.Add(collision.gameObject);
 
-            if (ballObj.Count == 1)
+            if (ballObj.Count == 2)
             {
                 score++;
             }

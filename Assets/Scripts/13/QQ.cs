@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Purchasing;
 using UnityEngine;
 
 public class QQ : MonoBehaviour
@@ -32,7 +31,7 @@ public class QQ : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            Destroy(gameObject);
+            DieEnemy();
         }
         else
         {
@@ -40,9 +39,16 @@ public class QQ : MonoBehaviour
 
             if (checkCountGround == 3)
             {
-                Destroy(gameObject);
+                
+                DieEnemy();
             }
         }
+    }
+
+    private void DieEnemy()
+    {
+        EffectManager.instance.PlayEffect("QQ", this.transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 
     private void NonEnemy()
